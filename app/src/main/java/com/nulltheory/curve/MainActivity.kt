@@ -3,14 +3,21 @@ package com.nulltheory.curve
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import org.json.JSONArray
 import java.net.URL
 
 class MainActivity : AppCompatActivity() {
+    lateinit var chart: LineChart
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        chart = findViewById(R.id.chart)
         renderChart()
     }
 
@@ -31,13 +38,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderChart() {
+        val entries = ArrayList<Entry>()
         val yields = JSONArray(getJSON())
 
         for(i in 0 until yields.length()) {
             val item = yields.getJSONObject(i)
-            val ts = item.optLong("expiration").toLong()
-            val y = item.optDouble("yield").toDouble() * 100
-            Log.d("api", "%d - %.2f%%".format(ts, y))
+            entries.add(Entry(
+                item.optLong("expiration").toFloat(),
+                item.optDouble("yield").toFloat()))
         }
+
+        val dataSet = LineDataSet(entries, "yields")
+        chart.data = LineData(dataSet)
+        chart.invalidate()
     }
 }
