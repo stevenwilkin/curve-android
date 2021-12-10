@@ -66,7 +66,10 @@ class MainActivity : AppCompatActivity() {
                 return "%.2f%%".format(value * 100)
             }
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
         renderChart()
     }
 
